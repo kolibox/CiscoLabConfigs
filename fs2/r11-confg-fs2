@@ -1,0 +1,132 @@
+
+!
+! Last configuration change at 13:36:13 Moscow Fri Oct 21 2016 by kolibomber
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console virtual
+!
+hostname R11
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 9XCTAWPYSYZ
+!
+username kolibomber privilege 15 secret 5 $1$MV0z$188bNNDhQq2KhN/TfvrlC/
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 10.255.255.11 255.255.255.255
+ ipv6 address 2001:10:255:255::11/128
+ 
+ interface GigabitEthernet1.102
+ encapsulation dot1Q 102
+ ip address 172.30.102.11 255.255.255.0
+ ipv6 address 2001:172:30:102::11/64
+!
+interface GigabitEthernet1.109
+ encapsulation dot1Q 109
+ ip address 172.30.109.11 255.255.255.0
+ ipv6 address 2001:172:30:109::11/64
+!
+
+!
+interface GigabitEthernet1
+ ip address 1.1.1.121 255.255.255.0
+ negotiation auto
+!
+
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+
+no ip http server
+no ip http secure-server
+!
+logging host 1.1.1.1
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ transport input ssh
+line vty 5 97
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

@@ -1,0 +1,150 @@
+
+!
+! Last configuration change at 11:01:54 UTC Fri Oct 21 2016 by kolibomber
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname R17
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+ip domain name soso
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9WEJ02AYWJB
+spanning-tree extend system-id
+!
+username kolibomber privilege 15 secret 5 $1$POMB$nX3pTD9y3feHkzOb/Ont.0
+!
+redundancy
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+interface Loopback0
+ description Local Loopback
+ ip address 192.122.3.17 255.255.255.255
+ ipv6 address ::192:122:3:17/128
+!
+interface GigabitEthernet1.117
+ encapsulation dot1Q 117
+ ip address 89.211.117.17 255.255.255.128
+ ipv6 address 2001:89:211:117::17/125
+!
+interface GigabitEthernet1.170
+ encapsulation dot1Q 170
+ ip address 172.25.170.17 255.255.255.0
+ ipv6 address 2001:172:25:170::17/64
+!
+!
+
+
+!
+!
+! 
+! 
+!
+
+interface GigabitEthernet1
+ ip address 1.1.1.127 255.255.255.0
+ negotiation auto
+!
+
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 5 97
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 98
+ logging synchronous
+!
+ntp server 1.1.1.1
+!
+end

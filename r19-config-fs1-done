@@ -1,0 +1,151 @@
+
+!
+! Last configuration change at 07:24:44 UTC Thu Dec 1 2016 by kolibomber
+! NVRAM config last updated at 14:10:37 UTC Mon Nov 28 2016 by kolibomber
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console virtual
+!
+hostname R19
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+ip domain name soso
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 9EXLHVIECB9
+!
+username kolibomber privilege 15 secret 5 $1$kNP7$VRNYh3.35Pg4WOjX.ZHPe0
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description Local Loopback
+ ip address 192.122.3.19 255.255.255.255
+ ipv6 address ::192:122:3:19/128
+!
+interface GigabitEthernet1
+ ip address 1.1.1.129 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet1.181
+ encapsulation dot1Q 181
+ ip address 172.27.181.19 255.255.255.0
+ ipv6 address 2001:172:27:181::19/64
+!
+interface GigabitEthernet1.192
+ encapsulation dot1Q 192
+ ip address 172.27.192.19 255.255.255.0
+ standby 1 ip 172.27.192.254
+ standby 1 preempt
+ standby 1 authentication md5 key-string SERVER_VIP
+ ipv6 address 2001:172:27:192::19/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+router eigrp X
+ !
+ address-family ipv4 unicast autonomous-system 123
+  !
+  af-interface GigabitEthernet1.192
+   passive-interface
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+  network 172.27.181.0 0.0.0.255
+  network 172.27.192.0 0.0.0.255
+  network 192.122.3.0
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+access-list 100 permit ip host 172.27.192.100 any
+access-list 100 permit ip any host 172.27.192.100
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0
+ exec-timeout 35791 0
+ privilege level 15
+ login local
+ transport input ssh
+line vty 1
+ exec-timeout 35791 0
+ privilege level 15
+ login local
+ length 0
+ transport input ssh
+line vty 2 4
+ exec-timeout 35791 0
+ privilege level 15
+ login local
+ transport input ssh
+line vty 5 97
+ exec-timeout 35791 0
+ privilege level 15
+ login local
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

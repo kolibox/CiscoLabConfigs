@@ -1,0 +1,143 @@
+
+!
+! Last configuration change at 11:01:54 UTC Fri Oct 21 2016 by kolibomber
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console virtual
+!
+hostname R20
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+ip domain name soso
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 93AIP7MYPAF
+!
+username kolibomber privilege 15 secret 5 $1$LmXe$IifDcZpajVVTG8sbgR9uh0
+!
+redundancy
+ mode none
+!
+!
+!
+
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 10.255.255.20 255.255.255.255
+ ipv6 address 2001:10:255:255::2/128
+!
+
+interface GigabitEthernet1.200
+ encapsulation dot1Q 200
+ ip address 169.254.200.0 255.255.255.254
+ ipv6 address 2001:169:254:200::/127
+!
+interface GigabitEthernet1.201
+ encapsulation dot1Q 201
+ ip address 183.20.100.20 255.255.255.0
+ ipv6 address 2001:183:20:100::2/64
+!
+
+interface GigabitEthernet1
+ ip address 1.1.1.130 255.255.255.0
+ negotiation auto
+!
+
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+router eigrp SITE_W
+ !
+ address-family ipv4 unicast autonomous-system 1831
+  !
+  topology base
+  exit-af-topology
+  network 10.255.255.0 0.0.0.255
+  network 183.0.0.0 0.255.255.255
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0
+ exec-timeout 35000 0
+ privilege level 15
+ login local
+ transport input ssh
+line vty 1
+ exec-timeout 35000 0
+ privilege level 15
+ login local
+ length 0
+ transport input ssh
+line vty 2 4
+ exec-timeout 35000 0
+ privilege level 15
+ login local
+ transport input ssh
+line vty 5 97
+ exec-timeout 35000 0
+ privilege level 15
+ login local
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

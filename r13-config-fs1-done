@@ -1,0 +1,142 @@
+
+!
+! Last configuration change at 15:08:02 Moscow Fri Dec 2 2016 by kolibomber
+! NVRAM config last updated at 14:40:09 Moscow Wed Sep 14 2016 by kolibomber
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console virtual
+!
+hostname R13
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 9ASGV95EIVB
+!
+username kolibomber privilege 15 secret 5 $1$jPhu$lUGdhRo/xF1qSmmgOvFcl.
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description Local Loopback
+ ip address 192.122.3.13 255.255.255.255
+ ipv6 address ::192:122:3:13/128
+ ospfv3 5 ipv6 area 5
+!
+interface GigabitEthernet1
+ ip address 1.1.1.123 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet1.113
+ encapsulation dot1Q 113
+ ip address 172.19.113.13 255.255.255.128
+ ipv6 address 2001:172:19:113::13/64
+ ospfv3 5 ipv6 area 5
+!
+interface GigabitEthernet1.134
+ encapsulation dot1Q 134
+ ip address 172.19.134.13 255.255.255.128
+ ipv6 address 2001:172:19:134::13/64
+ ospfv3 5 ipv6 area 5
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+router ospfv3 5
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 5
+ router-id 192.122.3.13
+ network 172.19.113.13 0.0.0.0 area 5
+ network 172.19.134.13 0.0.0.0 area 5
+ network 192.122.3.13 0.0.0.0 area 5
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+logging host 1.1.1.1
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ transport input ssh
+line vty 5 97
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

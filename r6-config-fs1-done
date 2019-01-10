@@ -1,0 +1,242 @@
+
+!
+! Last configuration change at 12:22:51 Moscow Thu Dec 1 2016 by kolibomber
+! NVRAM config last updated at 15:54:33 Moscow Mon Nov 28 2016 by kolibomber
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname R6
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$bEHD$qz6FRHS0Y8LbgXglL7kf6.
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+mpls ldp password required
+mpls ldp neighbor 192.122.3.5 password CC!E_!nE
+mpls ldp neighbor 192.122.3.4 password CC!E_!nE
+mpls ldp neighbor 192.122.3.3 password CC!E_!nE
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 950BHEK5RUC
+spanning-tree extend system-id
+!
+username kolibomber secret 5 $1$9jDo$As07C.FT4sbxgV3j8Z3.z0
+username admin privilege 15 secret 5 $1$dCSg$h9VNRfR0CsXCWWTxyhnl81
+!
+redundancy
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ description Local Loopback
+ ip address 192.122.3.6 255.255.255.255
+ ip pim sparse-mode
+ ip igmp join-group 226.10.6.6
+ ipv6 address ::192:122:3:6/128
+ ipv6 rip CCIE enable
+!
+interface GigabitEthernet1
+ ip address 1.1.1.106 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet1.36
+ encapsulation dot1Q 36
+ ip address 10.0.36.2 255.255.255.252
+ ip pim sparse-mode
+ ipv6 address 2001:10:0:36::2/126
+ ipv6 rip CCIE enable
+ mpls ip
+!
+interface GigabitEthernet1.46
+ encapsulation dot1Q 46
+ ip address 10.0.46.2 255.255.255.252
+ ip pim sparse-mode
+ ip rip v2-broadcast
+ ipv6 address 2001:10:0:46::2/126
+ ipv6 rip CCIE enable
+ mpls ip
+!
+interface GigabitEthernet1.56
+ encapsulation dot1Q 56
+ ip address 10.0.56.2 255.255.255.252
+ ip pim sparse-mode
+ ipv6 address 2001:10:0:56::2/126
+ ipv6 rip CCIE enable
+ mpls ip
+!
+interface GigabitEthernet1.60
+ encapsulation dot1Q 60
+ ip address 202.4.60.0 255.255.255.254
+ ip pim bsr-border
+ ip pim sparse-mode
+ ipv6 address 2001:202:4:60::/127
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+router rip
+ version 2
+ redistribute connected metric 6 route-map l0->rip
+ redistribute bgp 65006 metric 1 route-map path_to_R18
+ passive-interface default
+ no passive-interface GigabitEthernet1.36
+ no passive-interface GigabitEthernet1.46
+ no passive-interface GigabitEthernet1.56
+ network 10.0.0.0
+ no auto-summary
+!
+router bgp 65006
+ bgp log-neighbor-changes
+ neighbor ipv6-bgp peer-group
+ neighbor ipv6-bgp remote-as 65006
+ neighbor ipv6-bgp update-source Loopback0
+ neighbor ::192:122:3:3 peer-group ipv6-bgp
+ neighbor ::192:122:3:4 peer-group ipv6-bgp
+ neighbor ::192:122:3:5 peer-group ipv6-bgp
+ neighbor 2001:202:4:60::1 remote-as 65123
+ neighbor 2001:202:4:60::1 local-as 65600 no-prepend replace-as
+ neighbor 202.4.60.1 remote-as 65123
+ !
+ address-family ipv4
+  bgp scan-time 20
+  network 89.211.116.0 mask 255.255.255.128
+  network 89.211.117.0 mask 255.255.255.128
+  network 202.4.216.0 mask 255.255.255.192
+  no neighbor ::192:122:3:3 activate
+  no neighbor ::192:122:3:4 activate
+  no neighbor ::192:122:3:5 activate
+  no neighbor 2001:202:4:60::1 activate
+  neighbor 202.4.60.1 activate
+  neighbor 202.4.60.1 advertisement-interval 0
+ exit-address-family
+ !
+ address-family ipv6
+  neighbor ipv6-bgp route-reflector-client
+  neighbor ipv6-bgp next-hop-self
+  neighbor ::192:122:3:3 activate
+  neighbor ::192:122:3:4 activate
+  neighbor ::192:122:3:5 activate
+  neighbor 2001:202:4:60::1 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip nat inside source list nat interface GigabitEthernet1.106 overload
+ip forward-protocol nd
+!
+ip bgp-community new-format
+no ip http server
+no ip http secure-server
+ip route profile
+!
+!
+ip prefix-list pasth_to_R18 seq 5 permit 202.4.180.0/31
+logging host 1.1.1.1
+ipv6 router rip CCIE
+!
+!
+route-map l0->rip permit 10
+ match interface Loopback0
+!
+route-map path_to_R18 permit 10
+ match ip address prefix-list path_to_R18
+!
+mpls ldp router-id Loopback0 force
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+ length 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 5 98
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

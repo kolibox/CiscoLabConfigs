@@ -1,0 +1,289 @@
+
+!
+! Last configuration change at 14:01:54 Moscow Fri Oct 21 2016 by kolibomber
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console virtual
+!
+hostname R15
+!
+boot-start-marker
+boot-end-marker
+!
+!
+
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+multilink bundle-name authenticated
+!
+crypto pki trustpoint TP-self-signed-1060978562
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1060978562
+ revocation-check none
+ rsakeypair TP-self-signed-1060978562
+!
+!
+crypto pki certificate chain TP-self-signed-1060978562
+ certificate self-signed 01
+  3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 31303630 39373835 3632301E 170D3136 30393139 30393132 
+  33365A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D31 30363039 
+  37383536 3230819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281 
+  8100A5ED 50B8CA60 6B793CF2 FC2F8448 DCE9809F AB959EF7 2A82B963 8C75E209 
+  09880F6E E862A9DD 30AFE5E0 23D212DA D94A597B D5D3FDBE 268DF6C1 9A67EBE5 
+  6650446C D1274A80 A8057CA1 AD0E097E 7680F509 3A5BA3B7 29CEB76F 63D1FA19 
+  8CBFD9FB 0DA3D6E4 5C411636 1CDC7525 EC09D08D 8175BADB E5B7FF69 5223B55F 
+  8ED90203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603 
+  551D2304 18301680 1457EE1C 5E8F1FF3 A591A5B3 711614D9 FAF3DCAA B8301D06 
+  03551D0E 04160414 57EE1C5E 8F1FF3A5 91A5B371 1614D9FA F3DCAAB8 300D0609 
+  2A864886 F70D0101 05050003 81810040 C0E0081C F3264B71 E0FDD90B 352A6971 
+  29DEF829 B4A08172 5253C219 C5E74FFA 7E2FB0ED 462A400F 70C93AF7 C975E35B 
+  E462E590 4FA242EF 7B1900C7 024730F1 6C5B741B 71892050 2F17D989 B1E7321E 
+  FC48E5E8 C88B34D9 B4C6ED71 00F31C64 35304780 2A8968EA 868B24CF 36F329F2 
+  2E47A440 71B3AB7A B6B8A8A8 3026D0
+  	quit
+license udi pid CSR1000V sn 97AK0T76YRU
+!
+username kolibomber privilege 15 secret 5 $1$XDC.$82dshfbuhj2K/m6uH7DIW0
+!
+redundancy
+ mode none
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+vrf definition internet
+ rd 65123:65123
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition server1
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition server2
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition server3
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+interface Loopback0
+ description Local Loopback
+ ip address 192.122.3.15 255.255.255.255
+ ipv6 address ::192:122:3:15/128
+!
+!
+interface Loopback44
+ vrf forwarding internet
+ no ip address
+ ipv6 address 2004:4:2:2::1/128
+!
+interface Loopback88
+ vrf forwarding internet
+ no ip address
+ ipv6 address 2008:8:8:8::8/128
+!
+interface Loopback144
+ vrf forwarding internet
+ no ip address
+ ipv6 address 2004:144:4:4::100/128
+!
+interface Loopback160
+ vrf forwarding internet
+ no ip address
+ ipv6 address 2006::1/16
+!
+interface Loopback180
+ vrf forwarding internet
+ no ip address
+ ipv6 address 2004:180::2/32
+!
+
+
+
+interface GigabitEthernet1
+ ip address 1.1.1.125 255.255.255.0
+ negotiation auto
+!
+
+interface GigabitEthernet1.60
+ encapsulation dot1Q 60
+ vrf forwarding internet
+ ip address 202.4.60.1 255.255.255.254
+ ipv6 address 2001:202:4:60::1/127
+!
+interface GigabitEthernet1.134
+ encapsulation dot1Q 134
+ ip address 172.19.134.15 255.255.255.128
+ ipv6 address 2001:172:19:134::15/64
+!
+interface GigabitEthernet1.160
+ encapsulation dot1Q 160
+ vrf forwarding server3
+ ip address 172.23.160.100 255.255.255.0
+ ipv6 address 2001:172:23:160::100/64
+!
+interface GigabitEthernet1.170
+ encapsulation dot1Q 170
+ vrf forwarding server2
+ ip address 172.25.170.100 255.255.255.0
+ ipv6 address 2001:172:25:170::100/64
+!
+interface GigabitEthernet1.180
+ encapsulation dot1Q 180
+ vrf forwarding internet
+ ip address 202.4.180.1 255.255.255.254
+ ipv6 address 2001:202:4:180::1/127
+!
+interface GigabitEthernet1.192
+ encapsulation dot1Q 192
+ vrf forwarding server1
+ ip address 172.27.192.100 255.255.255.0
+ ipv6 address 2001:172:27:192::100/64
+!
+
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+router eigrp SERVERS
+ !
+ address-family ipv4 unicast vrf server2 autonomous-system 123
+  !
+  topology base
+  exit-af-topology
+  network 172.25.170.100 0.0.0.0
+ exit-address-family
+ !
+ address-family ipv4 unicast vrf server3 autonomous-system 123
+  !
+  topology base
+  exit-af-topology
+  network 172.23.160.100 0.0.0.0
+ exit-address-family
+!
+!
+router bgp 65123
+ bgp log-neighbor-changes
+ !
+ address-family ipv4 vrf internet
+  neighbor 202.4.60.0 remote-as 65006
+  neighbor 202.4.60.0 activate
+  neighbor 202.4.180.0 remote-as 65456
+  neighbor 202.4.180.0 activate
+ exit-address-family
+  !
+ address-family ipv6 vrf internet
+ 	redistribute connected route-map IPv6_INTERNET_ROUTES
+  neighbor 2001:202:4:60:: remote-as 65600
+  neighbor 2001:202:4:60:: activate
+ exit-address-family
+!
+!
+ip http secure-server
+ip route vrf server1 0.0.0.0 0.0.0.0 GigabitEthernet1.192 172.27.192.254
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+
+no ip http server
+
+route-map IPv6_INTERNET_ROUTES permit 10
+ match interface Loopback44 Loopback88 Loopback144 Loopback160 Loopback180
+!
+!
+
+logging host 1.1.1.1
+
+!
+!
+
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ transport input ssh
+line vty 5 97
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

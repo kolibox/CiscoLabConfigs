@@ -1,0 +1,193 @@
+
+!
+! Last configuration change at 14:01:54 Moscow Fri Oct 21 2016 by kolibomber
+! NVRAM config last updated at 14:29:17 Moscow Thu Aug 11 2016 by kolibomber
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname R3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$a1Qs$pijm6Y4bry6szYJbvjyn50
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+
+!
+license udi pid CSR1000V sn 9C5Z24YI9P8
+
+spanning-tree extend system-id
+!
+username kolibomber privilege 15 secret 5 $1$GOjD$kohxe7XG9HrwbwRoiq30
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 10.255.255.3 255.255.255.255
+ ipv6 address 2001:10:255:255::3/128
+!
+ 
+ interface GigabitEthernet1.23
+ encapsulation dot1Q 23
+ ip address 10.255.7.2 255.255.255.252
+ ipv6 enable
+!
+interface GigabitEthernet1.30
+ encapsulation dot1Q 30
+ ip address 169.254.30.0 255.255.255.254
+ ipv6 address 2001:169:254:30::/127
+!
+interface GigabitEthernet1.35
+ encapsulation dot1Q 35
+ ip address 10.255.9.1 255.255.255.252
+ ipv6 enable
+!
+interface GigabitEthernet1.36
+ encapsulation dot1Q 36
+ ip address 10.255.11.1 255.255.255.252
+ ipv6 enable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+
+interface GigabitEthernet1
+ ip address 1.1.1.103 255.255.255.0
+ negotiation auto
+!
+
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+
+no ip http server
+no ip http secure-server
+ip route profile
+!
+
+router bgp 1.20000
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.255.255.4 remote-as 1.20000
+ neighbor 10.255.255.4 update-source Loopback0
+ neighbor 2001:10:255:255::4 remote-as 1.20000
+ neighbor 2001:10:255:255::4 update-source Loopback0
+ neighbor 2001:169:254:30::1 remote-as 10000
+ neighbor 169.254.30.1 remote-as 10000
+ !
+ address-family ipv4
+  neighbor 10.255.255.4 activate
+  neighbor 169.254.30.1 activate
+ exit-address-family
+ !
+ address-family ipv6
+  neighbor 2001:10:255:255::4 activate
+  neighbor 2001:169:254:30::1 activate
+ exit-address-family
+!
+!
+!
+
+logging host 1.1.1.1
+
+!
+!
+!
+control-plane
+ service-policy input pim2
+!
+!
+line con 0
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 5 98
+ exec-timeout 600 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

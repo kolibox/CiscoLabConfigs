@@ -1,0 +1,196 @@
+
+!
+! Last configuration change at 14:01:54 Moscow Fri Oct 21 2016 by kolibomber
+! NVRAM config last updated at 14:29:17 Moscow Thu Aug 11 2016 by kolibomber
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname R6
+!
+boot-start-marker
+boot-end-marker
+!
+!
+
+!
+enable secret 5 $1$bEHD$qz6FRHS0Y8LbgXglL7kf6.
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+interface Loopback0
+ ip address 10.255.255.6 255.255.255.255
+ ipv6 address 2001:10:255:255::6/128
+ 
+ interface GigabitEthernet1.26
+ encapsulation dot1Q 26
+ ip address 10.255.8.2 255.255.255.252
+ ipv6 enable
+!
+interface GigabitEthernet1.36
+ encapsulation dot1Q 36
+ ip address 10.255.11.2 255.255.255.252
+ ipv6 enable
+!
+interface GigabitEthernet1.56
+ encapsulation dot1Q 56
+ ip address 10.255.10.2 255.255.255.252
+ ipv6 enable
+!
+interface GigabitEthernet1.60
+ encapsulation dot1Q 60
+ ip address 169.254.60.0 255.255.255.254
+ ipv6 address 2001:169:254:60::/127
+!
+
+license udi pid CSR1000V sn 950BHEK5RUC
+
+spanning-tree extend system-id
+!
+username kolibomber secret 5 $1$9jDo$As07C.FT4sbxgV3j8Z3.z0
+username admin privilege 15 secret 5 $1$dCSg$h9VNRfR0CsXCWWTxyhnl81
+!
+redundancy
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+
+!
+interface GigabitEthernet1
+ ip address 1.1.1.106 255.255.255.0
+ negotiation auto
+!
+
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+
+!
+virtual-service csr_mgmt
+!
+
+ip forward-protocol nd
+!
+ip bgp-community new-format
+no ip http server
+no ip http secure-server
+
+ip route profile
+!
+
+logging host 1.1.1.1
+!
+router bgp 1.20000
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.255.255.4 remote-as 1.20000
+ neighbor 10.255.255.4 update-source Loopback0
+ neighbor 2001:10:255:255::4 remote-as 1.20000
+ neighbor 2001:10:255:255::4 update-source Loopback0
+ neighbor 2001:169:254:60::1 remote-as 30000
+ neighbor 169.254.60.1 remote-as 30000
+ !
+ address-family ipv4
+  neighbor 10.255.255.4 activate
+  neighbor 169.254.60.1 activate
+ exit-address-family
+ !
+ address-family ipv6
+  neighbor 2001:10:255:255::4 activate
+  neighbor 2001:169:254:60::1 activate
+ exit-address-family
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+ length 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 5 98
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

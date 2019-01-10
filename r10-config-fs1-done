@@ -1,0 +1,193 @@
+
+!
+! Last configuration change at 15:08:02 Moscow Fri Dec 2 2016 by kolibomber
+! NVRAM config last updated at 14:29:17 Moscow Thu Aug 11 2016 by kolibomber
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname R10
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$a1Qs$pijm6Y4bry6szYJbvjyn50
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 971RDVRRWH3
+spanning-tree extend system-id
+!
+username kolibomber secret 5 $1$Jczz$rc5/1WhogBt2SNQpzvh/u/
+!
+redundancy
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ description Local Loopback
+ ip address 192.122.3.10 255.255.255.255
+ ipv6 address ::192:122:3:10/128
+ ipv6 eigrp 789
+!
+interface GigabitEthernet1
+ ip address 1.1.1.110 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet1.102
+ encapsulation dot1Q 102
+ ip address 172.19.102.10 255.255.255.128
+ ipv6 address 2001:172:19:102::10/64
+ ipv6 eigrp 789
+ bfd interval 150 min_rx 150 multiplier 3
+!
+interface GigabitEthernet1.210
+ encapsulation dot1Q 210
+ ip address 202.4.210.10 255.255.255.0
+ ipv6 address 2001:202:4:210::10/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+router eigrp X
+ !
+ address-family ipv4 unicast autonomous-system 789
+  !
+  af-interface default
+   bfd
+  exit-af-interface
+  !
+  topology base
+   redistribute bgp 65100 metric 1000000 10 255 1 1500
+  exit-af-topology
+  network 172.0.0.0 0.255.255.255
+  network 192.122.3.10 0.0.0.0
+  metric rib-scale 116
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 789
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router bgp 65100
+ bgp log-neighbor-changes
+ network 192.122.3.10 mask 255.255.255.255
+ network 192.122.3.11 mask 255.255.255.255
+ network 192.122.3.12 mask 255.255.255.255
+ network 192.122.3.13 mask 255.255.255.255
+ network 192.122.3.14 mask 255.255.255.255
+ network 192.122.3.15 mask 255.255.255.255
+ redistribute eigrp 789
+ neighbor 202.4.210.2 remote-as 65006
+ neighbor 202.4.210.2 advertisement-interval 0
+ neighbor 202.4.210.2 allowas-in 10
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+ip route profile
+!
+logging host 1.1.1.1
+!
+!
+!
+!
+!
+control-plane
+!
+alias exec ro show ip route
+!
+line con 0
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 5 98
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

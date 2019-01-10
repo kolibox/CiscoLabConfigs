@@ -1,0 +1,253 @@
+
+!
+! Last configuration change at 15:08:02 Moscow Fri Dec 2 2016 by kolibomber
+! NVRAM config last updated at 15:54:47 Moscow Mon Nov 28 2016 by kolibomber
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname R3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$a1Qs$pijm6Y4bry6szYJbvjyn50
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+mpls ldp neighbor 192.122.3.6 password CC!E_!nE
+no mpls ldp advertise-labels
+mpls ldp advertise-labels for ldp
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9C5Z24YI9P8
+spanning-tree extend system-id
+!
+username kolibomber privilege 15 secret 5 $1$GOjD$0/kohxe7XG9HrwbwRoiq30
+!
+redundancy
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ description Local Loopback
+ ip address 192.122.3.3 255.255.255.255
+ ip pim sparse-mode
+ ip ospf 100 area 0
+ ipv6 address ::192:122:3:3/128
+ ipv6 rip CCIE enable
+!
+interface Loopback100
+ ip address 192.122.3.100 255.255.255.255
+ ip pim sparse-mode
+ ip ospf 100 area 0
+!
+interface GigabitEthernet1
+ ip address 1.1.1.103 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet1.13
+ encapsulation dot1Q 13
+ ip address 10.0.13.2 255.255.255.252
+ ip pim sparse-mode
+ ip ospf network point-to-multipoint
+ ip ospf dead-interval 40
+ ip ospf hello-interval 10
+ ip ospf 100 area 20
+ ipv6 address 2001:10:0:13::2/126
+!
+interface GigabitEthernet1.23
+ encapsulation dot1Q 23
+ ip address 10.0.23.2 255.255.255.252
+ ip pim sparse-mode
+ ipv6 address 2001:10:0:23::2/126
+!
+interface GigabitEthernet1.34
+ encapsulation dot1Q 34
+ ip address 10.0.34.1 255.255.255.252
+ ip pim sparse-mode
+ ip ospf 100 area 0
+ ipv6 address 2001:10:0:34::1/126
+ ipv6 rip CCIE enable
+!
+interface GigabitEthernet1.35
+ encapsulation dot1Q 35
+ ip address 10.0.35.1 255.255.255.252
+ ip pim sparse-mode
+ ipv6 address 2001:10:0:35::1/126
+ ipv6 rip CCIE enable
+ mpls ip
+!
+interface GigabitEthernet1.36
+ encapsulation dot1Q 36
+ ip address 10.0.36.1 255.255.255.252
+ ip pim sparse-mode
+ ipv6 address 2001:10:0:36::1/126
+ ipv6 rip CCIE enable
+ mpls ip
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+router ospf 100
+ router-id 192.122.3.3
+ fast-reroute keep-all-paths
+ area 20 virtual-link 192.122.3.1
+ redistribute connected metric 1000 metric-type 1 subnets route-map link_1.23->ospf
+ redistribute rip subnets route-map rip->ospf
+ mpls ldp autoconfig
+!
+router rip
+ version 2
+ redistribute ospf 100 metric 1 route-map ospf->rip
+ passive-interface default
+ no passive-interface GigabitEthernet1.35
+ no passive-interface GigabitEthernet1.36
+ network 10.0.0.0
+ no auto-summary
+!
+router bgp 65006
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor ::192:122:3:6 remote-as 65006
+ neighbor ::192:122:3:6 update-source Loopback0
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+  network ::192:122:3:3/128
+  neighbor ::192:122:3:6 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+ip pim rp-candidate Loopback100 interval 5
+ip msdp peer 192.122.3.4 connect-source Loopback0
+ip msdp cache-sa-state
+ip msdp originator-id Loopback0
+no ip http server
+no ip http secure-server
+ip route profile
+!
+ip access-list standard ldp
+ permit 192.122.3.8
+ permit 192.122.3.2
+ permit 192.122.3.7
+ permit 192.122.3.6
+!
+logging host 1.1.1.1
+ipv6 router rip CCIE
+!
+!
+route-map link_1.23->ospf permit 10
+ match interface GigabitEthernet1.23
+!
+route-map ospf->rip deny 10
+ match tag 20
+!
+route-map ospf->rip permit 20
+ set tag 10
+!
+route-map rip->ospf deny 10
+ match tag 10
+!
+route-map rip->ospf permit 20
+ set tag 20
+!
+mpls ldp router-id Loopback0 force
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 5 98
+ exec-timeout 600 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

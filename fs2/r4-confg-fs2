@@ -1,0 +1,236 @@
+
+!
+! Last configuration change at 14:01:54 Moscow Fri Oct 21 2016 by kolibomber
+! NVRAM config last updated at 14:29:17 Moscow Thu Aug 11 2016 by kolibomber
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname R4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+
+enable secret 5 $1$SYC3$gilwk8GnC5FkiH5VD01t5.
+!
+aaa new-model
+!
+!
+!
+!
+!
+vrf definition SITE_B
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+
+license udi pid CSR1000V sn 95NC983YIYE
+archive
+ log config
+  logging enable
+  hidekeys
+spanning-tree extend system-id
+!
+username kolibomber secret 5 $1$ZKNn$472Mzdp6rIxwCsBLggdCC1
+!
+redundancy
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 10.255.255.4 255.255.255.255
+ ipv6 address 2001:10:255:255::4/128
+!
+ 
+ interface GigabitEthernet1.14
+ encapsulation dot1Q 14
+ ip address 10.255.1.2 255.255.255.252
+ ipv6 enable
+!
+interface GigabitEthernet1.24
+ encapsulation dot1Q 24
+ ip address 10.255.4.2 255.255.255.252
+ ipv6 enable
+!
+interface GigabitEthernet1.45
+ encapsulation dot1Q 45
+ ip address 10.255.6.1 255.255.255.252
+ ipv6 enable
+!
+interface GigabitEthernet1.49
+ encapsulation dot1Q 49
+ vrf forwarding SITE_B
+ ip address 172.30.49.4 255.255.255.0
+ ipv6 address 2001:172:30:49::4/64
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+
+!
+interface GigabitEthernet1
+ ip address 1.1.1.104 255.255.255.0
+ load-interval 30
+ negotiation auto
+!
+
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+router bgp 1.20000
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.255.255.1 remote-as 1.20000
+ neighbor 10.255.255.1 update-source Loopback0
+ neighbor 10.255.255.2 remote-as 1.20000
+ neighbor 10.255.255.2 update-source Loopback0
+ neighbor 10.255.255.3 remote-as 1.20000
+ neighbor 10.255.255.3 update-source Loopback0
+ neighbor 10.255.255.5 remote-as 1.20000
+ neighbor 10.255.255.5 update-source Loopback0
+ neighbor 10.255.255.6 remote-as 1.20000
+ neighbor 10.255.255.6 update-source Loopback0
+ neighbor 2001:10:255:255::2 remote-as 1.20000
+ neighbor 2001:10:255:255::2 update-source Loopback0
+ neighbor 2001:10:255:255::3 remote-as 1.20000
+ neighbor 2001:10:255:255::3 update-source Loopback0
+ neighbor 2001:10:255:255::6 remote-as 1.20000
+ neighbor 2001:10:255:255::6 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.255.255.2 activate
+  neighbor 10.255.255.3 activate
+  neighbor 10.255.255.6 activate
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.255.255.1 activate
+  neighbor 10.255.255.1 send-community extended
+  neighbor 10.255.255.2 activate
+  neighbor 10.255.255.2 send-community extended
+  neighbor 10.255.255.5 activate
+  neighbor 10.255.255.5 send-community extended
+ exit-address-family
+ !
+ address-family ipv6
+  neighbor 2001:10:255:255::2 activate
+  neighbor 2001:10:255:255::3 activate
+  neighbor 2001:10:255:255::6 activate
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.255.255.1 activate
+  neighbor 10.255.255.1 send-community extended
+  neighbor 10.255.255.2 activate
+  neighbor 10.255.255.2 send-community extended
+  neighbor 10.255.255.5 activate
+  neighbor 10.255.255.5 send-community extended
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+
+no ip http server
+no ip http secure-server
+
+!
+
+logging host 1.1.1.1
+
+!
+!
+
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 5 98
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

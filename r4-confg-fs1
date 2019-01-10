@@ -1,0 +1,183 @@
+
+!
+! Last configuration change at 14:01:54 Moscow Fri Oct 21 2016 by kolibomber
+! NVRAM config last updated at 14:29:17 Moscow Thu Aug 11 2016 by kolibomber
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname R4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+
+enable secret 5 $1$SYC3$gilwk8GnC5FkiH5VD01t5.
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+
+license udi pid CSR1000V sn 95NC983YIYE
+archive
+ log config
+  logging enable
+  hidekeys
+spanning-tree extend system-id
+!
+username kolibomber secret 5 $1$ZKNn$472Mzdp6rIxwCsBLggdCC1
+!
+redundancy
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description Local Loopback
+ ip address 192.122.3.4 255.255.255.255
+ ipv6 address ::192:122:3:4/128
+ 
+ interface GigabitEthernet1.14
+ encapsulation dot1Q 14
+ ip address 10.0.14.2 255.255.255.252
+ ipv6 address 2001:10:0:14::2/126
+!
+interface GigabitEthernet1.24
+ encapsulation dot1Q 24
+ ip address 10.0.24.2 255.255.255.252
+ ipv6 address 2001:10:0:24::2/126
+!
+interface GigabitEthernet1.34
+ encapsulation dot1Q 34
+ ip address 10.0.34.2 255.255.255.252
+ ipv6 address 2001:10:0:34::2/126
+!
+interface GigabitEthernet1.45
+ encapsulation dot1Q 45
+ ip address 10.0.45.1 255.255.255.252
+ ipv6 address 2001:10:0:45::1/126
+!
+interface GigabitEthernet1.46
+ encapsulation dot1Q 46
+ ip address 10.0.46.1 255.255.255.252
+ ipv6 address 2001:10:0:46::1/126
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+
+!
+interface GigabitEthernet1
+ ip address 1.1.1.104 255.255.255.0
+ load-interval 30
+ negotiation auto
+!
+
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+
+no ip http server
+no ip http secure-server
+
+!
+
+logging host 1.1.1.1
+
+!
+!
+
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 5 98
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

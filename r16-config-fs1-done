@@ -1,0 +1,226 @@
+
+!
+! Last configuration change at 15:08:02 Moscow Fri Dec 2 2016 by kolibomber
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname R16
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone Moscow 3 0
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+ip domain name soso
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9IDRAPOZ5VZ
+spanning-tree extend system-id
+!
+username kolibomber password 0 satan666
+!
+redundancy
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+crypto isakmp policy 10
+ encr aes 192
+ hash sha256
+ authentication pre-share
+ group 5
+crypto isakmp key DmvPn!23 address 0.0.0.0        
+!
+!
+crypto ipsec transform-set set esp-aes esp-sha-hmac 
+ mode tunnel
+!
+!
+crypto ipsec profile profile
+ set transform-set set 
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ description Local Loopback
+ ip address 192.122.3.16 255.255.255.255
+ ipv6 address ::192:122:3:16/128
+!
+interface Tunnel100
+ ip address 172.100.123.16 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPKEY
+ ip nhrp map 172.100.123.18 202.4.180.0
+ ip nhrp map multicast 202.4.180.0
+ ip nhrp network-id 100
+ ip nhrp nhs 172.100.123.18
+ ip nhrp shortcut
+ ip tcp adjust-mss 1360
+ tunnel source GigabitEthernet1.116
+ tunnel mode gre multipoint
+ tunnel key 100
+ tunnel path-mtu-discovery
+ tunnel protection ipsec profile profile
+!
+interface GigabitEthernet1
+ ip address 1.1.1.126 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet1.116
+ encapsulation dot1Q 116
+ ip address 89.211.116.16 255.255.255.128
+ ip pim sparse-mode
+ ip ospf 100 area 121
+ ipv6 address 2001:89:211:116::16/125
+!
+interface GigabitEthernet1.160
+ encapsulation dot1Q 160
+ ip address 172.23.160.16 255.255.255.0
+ ipv6 address 2001:172:23:160::16/64
+!
+interface GigabitEthernet1.216
+ encapsulation dot1Q 216
+ ip address 202.4.216.16 255.255.255.192
+ ip pim sparse-mode
+ ip ospf 100 area 121
+ ipv6 address 2001:202:4:216::16/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+router eigrp X
+ !
+ address-family ipv4 unicast autonomous-system 123
+  !
+  topology base
+  exit-af-topology
+  network 172.23.160.0 0.0.0.255
+  network 172.100.123.0 0.0.0.255
+  eigrp stub connected summary leak-map leak_all
+ exit-address-family
+!
+router ospf 100
+ router-id 192.122.3.16
+ area 121 nssa
+ redistribute connected subnets route-map l0->ospf
+ mpls ldp autoconfig
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+ip route profile
+!
+!
+ip prefix-list leak_all seq 5 permit 0.0.0.0/0 le 32
+logging host 1.1.1.1
+!
+route-map leak_all permit 10
+ match ip address prefix-list leak_all
+!
+route-map l0->ospf permit 10
+ match interface Loopback0
+!
+mpls ldp router-id Loopback0 force
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line vty 0
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 1 4
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ length 0
+ transport input ssh
+line vty 5 97
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+line vty 98
+ exec-timeout 600 0
+ privilege level 15
+ logging synchronous
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end

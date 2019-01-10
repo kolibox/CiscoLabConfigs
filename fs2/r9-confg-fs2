@@ -1,0 +1,150 @@
+
+!
+! Last configuration change at 11:01:54 UTC Fri Oct 21 2016 by kolibomber
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console virtual
+!
+hostname R9
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+aaa new-model
+!
+!
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+ip domain name soso
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 9C0QVX5RE5B
+!
+username kolibomber privilege 15 secret 5 $1$piKX$UPL.5gf9be94UuieCAVvl/
+!
+redundancy
+ mode none
+!
+!
+!
+!
+interface Loopback0
+ ip address 10.255.255.9 255.255.255.255
+ ipv6 address 2001:10:255:255::9/128
+ !
+ 
+ interface GigabitEthernet1.49
+ encapsulation dot1Q 49
+ ip address 172.30.49.9 255.255.255.0
+ ipv6 address 2001:172:30:49::9/64
+!
+interface GigabitEthernet1.109
+ encapsulation dot1Q 109
+ ip address 172.30.109.9 255.255.255.0
+ ipv6 address 2001:172:30:109::9/64
+!
+
+!
+!
+!
+!
+!
+
+interface GigabitEthernet1
+ ip address 1.1.1.109 255.255.255.0
+ negotiation auto
+!
+
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+ip bgp-community new-format
+
+no ip http server
+no ip http secure-server
+!
+
+!
+control-plane
+!
+
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0
+ exec-timeout 35791 0
+ privilege level 15
+ transport input ssh
+line vty 1
+ exec-timeout 35791 0
+ privilege level 15
+ length 0
+ transport input ssh
+line vty 2 4
+ exec-timeout 35791 0
+ privilege level 15
+ transport input ssh
+line vty 5
+ exec-timeout 35791 0
+ privilege level 15
+ logging synchronous
+ rotary 1
+ transport input ssh
+line vty 6 97
+ exec-timeout 35791 0
+ privilege level 15
+ transport input ssh
+!
+ntp server 1.1.1.1
+!
+end
